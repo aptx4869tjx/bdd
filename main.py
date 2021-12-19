@@ -178,28 +178,16 @@ def reduce(v, max_index):
     index_list = list(range(max_index + 2))[1:]
     index_list.reverse()
     for i in index_list:
-        if i == 5:
-            print('555')
-        if i == 6:
-            print('666')
-        if i == 7:
-            print('777')
         Q = {}
         q1 = []
         for u in vlist[i]:
             if u.index == max_index + 1:
-                # if Q.get(str(u.value), None) is not None:
-                #     u.id = Q[str(u.value)].id
-                # else:
                 Q[str(u.value)] = u
                 q1.append((u.value, u))
                 # u.id = u.value + 1
             elif u.low.id == u.high.id:
                 u.id = u.low.id
             else:
-                # if Q.get(str(u.low.id * (v.id + 1)) + str(u.high.id), None) is not None:
-                #     u.id = Q[str(u.low.id * (v.id + 1)) + str(u.high.id)].id
-                # else:
                 q1.append((str(u.low.id * (v.id + 1)) + str(u.high.id), u))
                 Q[str(u.low.id * (v.id + 1)) + str(u.high.id)] = u
         old_key = '-1'
@@ -213,18 +201,8 @@ def reduce(v, max_index):
                 u.id = nextid
                 subgraph[str(nextid)] = u
                 if u.low is not None:
-                    # if u.low.value == 0:
-                    #     u.low = subgraph['1']
-                    # elif u.low.value == 1:
-                    #     u.low = subgraph['2']
-                    # else:
                     u.low = subgraph.get(str(u.low.id), None)
                 if u.high is not None:
-                    # if u.high.value == 0:
-                    #     u.high = subgraph['1']
-                    # elif u.high.value == 1:
-                    #     u.high = subgraph['2']
-                    # else:
                     u.high = subgraph.get(str(u.high.id), None)
                 old_key = key
 
