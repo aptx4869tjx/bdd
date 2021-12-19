@@ -178,19 +178,34 @@ def reduce(v, max_index):
     index_list = list(range(max_index + 2))[1:]
     index_list.reverse()
     for i in index_list:
-
+        if i == 5:
+            print('555')
+        if i == 6:
+            print('666')
+        if i == 7:
+            print('777')
         Q = {}
+        q1 = []
         for u in vlist[i]:
             if u.index == max_index + 1:
+                # if Q.get(str(u.value), None) is not None:
+                #     u.id = Q[str(u.value)].id
+                # else:
                 Q[str(u.value)] = u
+                q1.append((u.value, u))
+                # u.id = u.value + 1
             elif u.low.id == u.high.id:
                 u.id = u.low.id
             else:
-                Q[str(u.low.id * v.id) + str(u.high.id)] = u
+                # if Q.get(str(u.low.id * (v.id + 1)) + str(u.high.id), None) is not None:
+                #     u.id = Q[str(u.low.id * (v.id + 1)) + str(u.high.id)].id
+                # else:
+                q1.append((str(u.low.id * (v.id + 1)) + str(u.high.id), u))
+                Q[str(u.low.id * (v.id + 1)) + str(u.high.id)] = u
         old_key = '-1'
         s_keys = sorted(Q.keys())
-        for key in s_keys:
-            u = Q.get(key)
+        q1.sort(key=lambda e: e[0])
+        for key, u in q1:
             if key == old_key:
                 u.id = nextid
             else:
@@ -198,20 +213,44 @@ def reduce(v, max_index):
                 u.id = nextid
                 subgraph[str(nextid)] = u
                 if u.low is not None:
-                    if u.low.value == 0:
-                        u.low = subgraph['1']
-                    elif u.low.value == 1:
-                        u.low = subgraph['2']
-                    else:
-                        u.low = subgraph.get(str(u.low.id), None)
+                    # if u.low.value == 0:
+                    #     u.low = subgraph['1']
+                    # elif u.low.value == 1:
+                    #     u.low = subgraph['2']
+                    # else:
+                    u.low = subgraph.get(str(u.low.id), None)
                 if u.high is not None:
-                    if u.high.value == 0:
-                        u.high = subgraph['1']
-                    elif u.high.value == 1:
-                        u.high = subgraph['2']
-                    else:
-                        u.high = subgraph.get(str(u.high.id), None)
+                    # if u.high.value == 0:
+                    #     u.high = subgraph['1']
+                    # elif u.high.value == 1:
+                    #     u.high = subgraph['2']
+                    # else:
+                    u.high = subgraph.get(str(u.high.id), None)
                 old_key = key
+
+        # for key in s_keys:
+        #     u = Q.get(key)
+        #     if key == old_key:
+        #         u.id = nextid
+        #     else:
+        #         nextid += 1
+        #         u.id = nextid
+        #         subgraph[str(nextid)] = u
+        #         if u.low is not None:
+        #             if u.low.value == 0:
+        #                 u.low = subgraph['1']
+        #             elif u.low.value == 1:
+        #                 u.low = subgraph['2']
+        #             else:
+        #                 u.low = subgraph.get(str(u.low.id), None)
+        #         if u.high is not None:
+        #             if u.high.value == 0:
+        #                 u.high = subgraph['1']
+        #             elif u.high.value == 1:
+        #                 u.high = subgraph['2']
+        #             else:
+        #                 u.high = subgraph.get(str(u.high.id), None)
+        #         old_key = key
     return subgraph[str(v.id)]
 
 
@@ -236,34 +275,38 @@ def draw(v):
     bfs.put(v)
     flag_set = set()
     edge_set = set()
-    f.node('x' + str(v.index))
+
     while not bfs.empty():
         u = bfs.get()
+        if u.value == 0 or u.value == 1:
+            f.node(str(u.value))
+        else:
+            f.node('x' + str(u.index) + str(u.id), 'x' + str(u.index))
         flag_set.add(u.id)
         if u.low is not None:
             bfs.put(u.low)
             if u.low.value != -1:
                 f.node(str(u.low.value))
-                if 'x' + str(u.index) + str(u.low.value) not in edge_set:
-                    f.edge('x' + str(u.index), str(u.low.value), label='low')
-                    edge_set.add('x' + str(u.index) + str(u.low.value))
+                if 'x' + str(u.index) + str(u.id) + str(u.low.value) not in edge_set:
+                    f.edge('x' + str(u.index) + str(u.id), str(u.low.value), label='low')
+                    edge_set.add('x' + str(u.index) + str(u.id) + str(u.low.value))
             else:
-                f.node('x' + str(u.low.index))
-                if 'x' + str(u.index) + str(u.low.index) not in edge_set:
-                    f.edge('x' + str(u.index), 'x' + str(u.low.index), label='low')
-                    edge_set.add('x' + str(u.index) + str(u.low.index))
+                f.node('x' + str(u.low.index) + str(u.low.id), label='x' + str(u.low.index))
+                if 'x' + str(u.index) + str(u.id) + str(u.low.index) + str(u.low.id) not in edge_set:
+                    f.edge('x' + str(u.index) + str(u.id), 'x' + str(u.low.index) + str(u.low.id), label='low')
+                    edge_set.add('x' + str(u.index) + str(u.id) + str(u.low.index) + str(u.low.id))
         if u.high is not None:
             bfs.put(u.high)
             if u.high.value != -1:
                 f.node(str(u.high.value))
-                if 'x' + str(u.index) + str(u.high.value) not in edge_set:
-                    f.edge('x' + str(u.index), str(u.high.value), label='high')
-                    edge_set.add('x' + str(u.index) + str(u.high.value))
+                if 'x' + str(u.index) + str(u.id) + str(u.high.value) not in edge_set:
+                    f.edge('x' + str(u.index) + str(u.id), str(u.high.value), label='high')
+                    edge_set.add('x' + str(u.index) + str(u.id) + str(u.high.value))
             else:
-                f.node('x' + str(u.index))
-                if 'x' + str(u.index) + str(u.high.index) not in edge_set:
-                    f.edge('x' + str(u.index), 'x' + str(u.high.index), label='high')
-                    edge_set.add('x' + str(u.index) + str(u.high.index))
+                f.node('x' + str(u.index) + str(u.id), label='x' + str(u.index))
+                if 'x' + str(u.index) + str(u.id) + str(u.high.index) + str(u.high.id) not in edge_set:
+                    f.edge('x' + str(u.index) + str(u.id), 'x' + str(u.high.index) + str(u.high.id), label='high')
+                    edge_set.add('x' + str(u.index) + str(u.id) + str(u.high.index) + str(u.high.id))
     f.view()
 
 
@@ -308,9 +351,15 @@ if __name__ == "__main__":
     # ok3
     # expression = "x1*x2+x4"
     # ok4
-    # expression = "x1*x2+x3*x4+x5*x6"
+    expression = "x1*x2+x3*x4+x5*x6"
     # ok5
-    expression = "x1+x2*x3+x4*x5+x6"
+    # expression = "x1+x2*x3+x4*x5+x6"
+    # ok6
+    # expression = "¬x1+(x2*¬(¬x3+x4)*¬x5+x6)"
+    # ok7
+    # expression = "x3+(x2*¬x1)"
+    # ok8
+    # expression = "(x1*x4)+(x2*x5)+(x3*x6)"
     exp = boolexp(expression)
     exp.infix2suffix()
     print(exp.suffix_exp)
