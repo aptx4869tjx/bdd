@@ -1,25 +1,9 @@
 digraph finite_state_machine {
-	x15 [label=x1]
-	x24 [label=x2]
-	x15 -> x24 [label=low]
-	x15 [label=x1]
-	x15 -> x33 [label=high]
-	x24 [label=x2]
-	x33 [label=x3]
-	x24 -> x33 [label=low]
-	1
-	x24 -> 1 [label=high]
 	x33 [label=x3]
 	0
 	x33 -> 0 [label=low]
 	1
 	x33 -> 1 [label=high]
-	x33 [label=x3]
-	0
-	1
-	1
-	0
-	1
 	0
 	1
 }

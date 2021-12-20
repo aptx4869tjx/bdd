@@ -72,10 +72,21 @@ def get_vertex_list(var_list):
     return vertex_list, max_index
 
 
+def copy_vertex(v):
+    res = Vertex()
+    res.low = v.low
+    res.high = v.high
+    res.index = v.index
+    res.value = v.value
+    res.id = v.id
+    res.mark = v.mark
+    return res
+
+
 # print(exp)
 def deal_exp(exp, vertex_list, max_index):
     if exp.type == 'Variable':
-        return vertex_list[exp.index]
+        return copy_vertex(vertex_list[exp.index])
     if exp.type == 'AND' or exp.type == 'OR':
         e1_vertex = deal_exp(exp.exp1, vertex_list, max_index)
         e2_vertex = deal_exp(exp.exp2, vertex_list, max_index)
@@ -98,11 +109,20 @@ def deal_not(v):
     bfs = Queue()
     bfs.put(v)
     flag_set = set()
-
     while not bfs.empty():
-        u = bfs.get()
-        if (u.value == 1 or u.value == 0) and (u.id not in flag_set):
-            u.value = 1 - u.value
+        u= bfs.get()
+        if u.value == 1 or u.value == 0:
+            continue
+        if u.low.value == 0 or u.low.value == 1:
+            low = copy_vertex(u.low)
+            low.value = 1 - low.value
+            u.low = low
+
+        if u.high.value == 0 or u.high.value == 1:
+            high = copy_vertex(u.high)
+            high.value = 1 - high.value
+            u.high = high
+
         flag_set.add(u.id)
         if u.low is not None and (u.low.id not in flag_set):
             bfs.put(u.low)
@@ -329,15 +349,18 @@ if __name__ == "__main__":
     # ok3
     # expression = "x1*x2+x4"
     # ok4
-    expression = "x1*x2+x3*x4+x5*x6"
+    # expression = "x1*x2+x3*x4+x5*x6"
     # ok5
     # expression = "x1+x2*x3+x4*x5+x6"
     # ok6
     # expression = "¬x1+(x2*¬(¬x3+x4)*¬x5+x6)"
     # ok7
-    # expression = "x3+(x2*¬x1)"
+    expression = "x3+(x2*¬x1)*¬x2"
     # ok8
     # expression = "(x1*x4)+(x2*x5)+(x3*x6)"
+    # expression = "¬x1+(x2*¬(¬x3+x4)*(¬x5+x6))"
+    # expression = "¬(x1*x3)+(x1*x2)"
+    # expression = "x1*(¬x1)"
     exp = boolexp(expression)
     exp.infix2suffix()
     print(exp.suffix_exp)
